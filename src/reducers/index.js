@@ -1,5 +1,10 @@
 import { combineReducers } from "redux";
-import { NOW_PLAYING, MOVIE_DETAILS } from "../actions/actionTypes";
+import {
+  NOW_PLAYING,
+  MOVIE_DETAILS,
+  LATEST,
+  UPCOMING,
+} from "../actions/actionTypes";
 
 const initialState = {
   loading: false,
@@ -13,7 +18,7 @@ const initialStateDetails = {
   data: [],
 };
 
-const moviesReducer = (state = initialState, { type, payload }) => {
+const nowPlayingReducer = (state = initialState, { type, payload }) => {
   switch (type) {
     case NOW_PLAYING.FETCH_START:
       return {
@@ -27,12 +32,69 @@ const moviesReducer = (state = initialState, { type, payload }) => {
         loading: false,
         data: payload,
       };
-
-    default:
+    case NOW_PLAYING.FETCH_FAIL:
       return {
-        ...initialState,
+        ...state,
+        loading: false,
         error: payload,
       };
+
+    default:
+      return state;
+  }
+};
+
+const latestReducer = (state = initialState, { type, payload }) => {
+  switch (type) {
+    case LATEST.FETCH_START:
+      return {
+        ...initialState,
+        loading: true,
+      };
+
+    case LATEST.FETCH_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        data: payload,
+      };
+
+    case LATEST.FETCH_FAIL:
+      return {
+        ...state,
+        loading: false,
+        error: payload,
+      };
+
+    default:
+      return state;
+  }
+};
+
+const upcomingReducer = (state = initialState, { type, payload }) => {
+  switch (type) {
+    case UPCOMING.FETCH_START:
+      return {
+        ...initialState,
+        loading: true,
+      };
+
+    case UPCOMING.FETCH_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        data: payload,
+      };
+
+    case UPCOMING.FETCH_FAIL:
+      return {
+        ...state,
+        loading: false,
+        error: payload,
+      };
+
+    default:
+      return state;
   }
 };
 
@@ -54,15 +116,21 @@ export const selectedMovieReducer = (
         data: payload,
       };
 
-    default:
+    case MOVIE_DETAILS.FETCH_FAIL:
       return {
-        ...initialState,
+        ...state,
+        loading: false,
         error: payload,
       };
+
+    default:
+      return state;
   }
 };
 
 export default combineReducers({
-  movies: moviesReducer,
+  nowPlaying: nowPlayingReducer,
+  latest: latestReducer,
+  upcoming: upcomingReducer,
   selectedMovie: selectedMovieReducer,
 });

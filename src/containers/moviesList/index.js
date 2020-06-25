@@ -1,20 +1,29 @@
 import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, batch } from "react-redux";
 import { Link } from "react-router-dom";
-import { fetchNowPlayingMovies, fetchLatestMovies } from "../../actions";
+import {
+  fetchNowPlayingMovies,
+  fetchLatestMovies,
+  fetchUpcomingMovies,
+} from "../../actions";
 import Title from "../title";
 import "./index.sass";
 
 const MoviesList = (props) => {
-  const movies = useSelector((state) => state.movies.data);
+  const movies = useSelector((state) => state.nowPlaying.data);
+  const latest = useSelector((state) => state.latest.data);
+  const upcoming = useSelector((state) => state.upcoming.data);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchNowPlayingMovies());
+    batch(() => {
+      dispatch(fetchNowPlayingMovies());
+      dispatch(fetchLatestMovies());
+      dispatch(fetchUpcomingMovies());
+    });
   }, [dispatch]);
 
-  console.log("movies", movies);
   return (
     <div className="list">
       <Title title="Cinema" />
@@ -38,9 +47,9 @@ const MoviesList = (props) => {
         ))}
       </div>
       <div className="list__wrapper">
-        <div className="list__title">Latest</div>
+        <div className="list__title"> Upcoming</div>
 
-        {movies.map((movie) => (
+        {upcoming.map((movie) => (
           <Link to={`/details/${movie.id}`}>
             <img
               key={movie.id}
@@ -57,9 +66,9 @@ const MoviesList = (props) => {
         ))}
       </div>
       <div className="list__wrapper">
-        <div className="list__title">Upcoming</div>
+        <div className="list__title">Latest</div>
 
-        {movies.map((movie) => (
+        {latest.map((movie) => (
           <Link to={`/details/${movie.id}`}>
             <img
               key={movie.id}
