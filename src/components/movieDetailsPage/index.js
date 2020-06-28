@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchMovieDetails } from "../../actions";
+import { fetchMovieDetails } from "../../store/actions/detailsActions";
 import Title from "../title";
 import "./index.sass";
 
-const MovieItem = (props) => {
+const MovieDetails = (props) => {
   const movie = useSelector((state) => state.selectedMovie.data);
   const loading = useSelector((state) => state.selectedMovie.loading);
 
@@ -12,12 +12,15 @@ const MovieItem = (props) => {
 
   const movieId = props.match.params.id;
 
+  const changeRating = () => {
+    if (movie.popularity !== undefined) {
+      return <div>{movie.popularity.toFixed(1)}</div>;
+    } else return <div>0</div>;
+  };
+
   useEffect(() => {
     dispatch(fetchMovieDetails(movieId));
   }, [dispatch, movieId]);
-
-  // console.log("movie", movie);
-  // console.log("loading", loading);
 
   if (loading) return <div>Loading..</div>;
   return (
@@ -27,33 +30,33 @@ const MovieItem = (props) => {
       <div className="container">
         <div className="row">
           <div className="col-md-3 cell">
-            Title:
+            <div className="category">Title:</div>
             <div>{movie.title}</div>
           </div>
           <div className="col-md-6 cell">
-            Description:
+            <div className="category">Description:</div>
             <div>{movie.overview}</div>
           </div>
           <div className="col-md-3 cell">
-            Date:
+            <div className="category">Date:</div>
             <div>{movie.release_date}</div>
           </div>
         </div>
         <div className="row">
           <div className="col-md-6 cell">
-            Genre:
+            <div className="category">Genre:</div>
             <ul>
-              {/* {movie.genres.map((genre) => (
+              {(movie.genres || []).map((genre) => (
                 <li>{genre.name}</li>
-              ))} */}
+              ))}
             </ul>
           </div>
           <div className="col-md-3 cell">
-            Rating:
-            <div>{movie.popularity}</div>
+            <div className="category">Rating:</div>
+            <div>{changeRating()}</div>
           </div>
           <div className="col-md-3 cell">
-            Duration:
+            <div className="category">Duration:</div>
             <div>{movie.runtime}m</div>
           </div>
         </div>
@@ -62,4 +65,4 @@ const MovieItem = (props) => {
   );
 };
 
-export default MovieItem;
+export default MovieDetails;
